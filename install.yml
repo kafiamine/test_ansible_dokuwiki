@@ -1,0 +1,39 @@
+- hosts: all
+  tasks:
+    - name: Install apache et php!
+      apt:
+        name: ['apache2', 'php7.3']
+        state: present
+      
+    - name: Download dokuwiki tgz
+      get_url:
+        url: http://download.dokuwiki.org/src/dokuwiki/dokuwiki-stable.tgz
+        dest: /usr/src/dokuwiki.tgz
+    - name: create a directory on the remote server
+      file:
+        path: /usr/src/dokuwiki
+        state: directory
+ 
+    - name: Extract dokuwiki tgz into /usr/src/dokuwiki
+      unarchive:
+        src: /usr/src/dokuwiki.tgz 
+        dest: /usr/src/dokuwiki
+        remote_src: yes
+
+    - name: create directory in the remote server for the site politique
+      file:
+            path: "/var/www/{{ item }}"
+      with_items:
+        - politique.wiki
+        - recettes.wiki
+        - devops.wiki
+
+    - name: Transfer le docuwiki de usr/src/dokuwiki au site approprie
+      synchronize:
+         src: /usr/src/dokuwiki/
+         dest: "/var/www/{{ item }}"
+         delegate_to: server0 
+      with_items:
+        - politique.wiki
+        - recettes.wiki
+        - devops.wiki
