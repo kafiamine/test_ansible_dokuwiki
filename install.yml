@@ -32,7 +32,7 @@
       synchronize:
          src: /usr/src/dokuwiki/
          dest: "/var/www/{{ item }}"
-         delegate_to: server0 
+      delegate_to: "{{ inventory_hostname }}"
       with_items:
         - politique.wiki
         - recettes.wiki
